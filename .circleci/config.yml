@@ -1,46 +1,35 @@
-version: 2.1
-executors:
-  node-executor:
+version: 2
+jobs:
+  build:
     docker:
-      - image: circleci/node:10
-commands:
-  gatsby-build:
+    - image: circleci/node
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - yarn-cache-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install Dependencies
-          command: yarn install && npm rebuild
-      - save_cache:
-          key: yarn-cache-{{ checksum "yarn.lock" }}
-          paths:
-            - ./node_modules
-      - restore_cache:
-          keys:
-            - gatsby-public-cache-{{ .Branch }}
-      - run:
-          name: Gatsby Build
-          command: GATSBY_CPU_COUNT=2 yarn build
-      - save_cache:
-          key: gatsby-public-cache-{{ .Branch }}
-          paths:
-            - ./public
+    - checkout
+    - run:
+        command: echo "Building complete"
+  test:
+    docker:
+    - image: circleci/node
+    steps:
+    - run:
+        command: echo "Testing complete"
+  deploy:
+    docker:
+    - image: circleci/node
+    steps:
+    - run:
+        command: echo "DEPLOYING"
 workflows:
   version: 2
-  build-deploy:
+  build-test-and-deploy:
     jobs:
-      - build:
-          filters:
-            branches:
-              ignore:
-                - master
-      - release:
-          filters:
-            branches:
-              only:
-                - master
+    - build
+    - test:
+        requires:
+        - build
+    - deploy:
+        requires:
+        - test
 jobs:
   build:
     executor: node-executor
