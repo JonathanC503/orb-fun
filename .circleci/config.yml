@@ -2,31 +2,34 @@ version: 2
 jobs:
   OF-build:
     docker:
-    - image: circleci/node
+    - image: circleci/node:10
     steps:
     - checkout
     - run:
         command: echo "Building complete"
   test:
     docker:
-    - image: circleci/node
+    - image: circleci/node:10
     steps:
     - run:
         command: echo "Testing complete"
   deploy:
     docker:
-    - image: circleci/node
+    - image: circleci/node:10
     steps:
     - run:
         command: echo "DEPLOYING"
 workflows:
   version: 2
-  build-test-and-deploy:
+  build-deploy:
     jobs:
-    - OF-build
-    - test:
-        requires:
-        - OF-build
-    - deploy:
-        requires:
-        - test
+      - OF-build:
+          filters:
+            branches:
+              ignore:
+                - master
+      - release:
+          filters:
+            branches:
+              only:
+                - master

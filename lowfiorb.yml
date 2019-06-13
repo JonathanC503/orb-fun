@@ -4,18 +4,20 @@ description: A Net-Li-Fly Deploy Orb
 orbs:
 jobs:
   OF-build:
-    executor: node-executor
+    docker:
+      - image: circleci/node:10
     environment:
       NETLIFY_SITE_ID: NETLIFY_SITE_ID
       NETLIFY_ACCESS_TOKEN: A_NETLIFY_ACCESS_TOKEN
     working_directory: ~/repo
     steps:
-      -OF-build
+      - OF-build
       - run:
           name: Netlify Deploy
           command: ./node_modules/.bin/netlify deploy --site $NETLIFY_SITE_ID --auth $NETLIFY_ACCESS_TOKEN --dir=public
   release:
-    executor: node-executor
+    docker:
+      - image: circleci/node:10
     environment:
       NETLIFY_SITE_ID: YOUR_NETLIFY_SITE_ID
       NETLIFY_ACCESS_TOKEN: A_NETLIFY_ACCESS_TOKEN    
